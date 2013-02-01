@@ -1,0 +1,27 @@
+<project name="Project Automation" default="build" basedir=".">
+	<!-- *************************************************
+    Property files
+	 ************************************************* -->
+    <property file="${basedir}/automation/ant/conf/${user.name}.properties" />
+	<property file="${basedir}/automation/ant/conf/build.properties" />
+
+	<!-- *************************************************
+    Flex ANT Task
+	 ************************************************* -->
+    <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/> 
+	<taskdef resource="flexUnitTasks.tasks">
+	   <classpath>
+	      <fileset dir="${path.ant.libs.flexunit}">
+	         <include name="flexUnitTasks*.jar" />
+	      </fileset>
+	   </classpath>
+	</taskdef>
+
+	<!-- *************************************************
+    Build Project
+	 ************************************************* -->
+	<target name="deploy" >
+		<ant antfile="${path.ant}/targetsCommon.xml" target="init" />
+		<ant antfile="${path.ant}/targetsCommon.xml" target="compile" />
+	</target>
+</project>

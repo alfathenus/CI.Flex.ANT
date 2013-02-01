@@ -1,0 +1,203 @@
+<project name="Lacayo Automation" basedir="../../">
+	
+	<!-- *************************************************
+    ANT task to help build a Flex App from ANT
+	 ************************************************* -->
+
+
+	<!-- *************************************************
+    Path init
+	 ************************************************* -->
+    <target name="init">
+        <delete dir="${path.deploy}" includeEmptyDirs="true" />
+        <mkdir dir="${path.deploy}" />
+    	
+    </target>
+    
+    <!-- *************************************************
+	Test execution
+	 ************************************************* -->
+	<target name="test">
+		<mkdir dir="${path.test.deploy}" />
+    	<mkdir dir="${path.test.report}" />
+		<!-- build for test -->
+		<mxmlc  file="${path.src}/${app.name}.mxml"
+                output="${path.test.deploy}/${app.name}.swf"
+                debug="true"
+                optimize="false"
+                locale="${app.locale}"
+                configname="air">
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+            <source-path path-element="${path.src}"/>
+            <library-path dir="${FLEX_HOME}/frameworks/libs" includes="*.swc" append="true"/>
+            <library-path dir="${FLEX_HOME}/frameworks/libs/air" includes="*.swc" append="true"/>
+            <library-path dir="${FLEX_HOME}/frameworks/locale" includes="${app.locale}" append="true"/>
+        	<library-path dir="${basedir}/libs" includes="*.swc" append="true"/>
+			<compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
+			<compiler.headless-server>true</compiler.headless-server>
+        </mxmlc>
+		<!-- tests execution -->
+		<flexunit 	player="air"
+					workingDir="${path.test.deploy}"
+					toDir="${path.test.report}" 
+					haltonfailure="false" 
+					verbose="true" 
+					localTrusted="true">
+			<source dir="${path.src}" />
+			<testSource dir="${path.test.src}">
+				<include name="**/*Test.as" /><!-- All files ended with "Test" keyword -->
+			</testSource>
+			<library dir="${path.libs}" >
+				<include name="**/*.swc" />
+			</library>
+			<library dir="${path.automation}/libs/swc" >
+				<include name="**/*.swc" />
+			</library>
+		</flexunit>
+		<!-- build junit style report -->
+		<junitreport todir="${path.test.report}">
+			<fileset dir="${path.test.report}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${path.test.report}/html" />
+		</junitreport>
+	</target>
+	
+	<!-- *************************************************
+    Application building
+	 ************************************************* -->
+    <target name="compile" depends="">
+        <mxmlc  file="${path.src}/${app.name}.mxml"
+                output="${path.deploy}/${app.name}.swf"
+                debug="${app.debug}"
+                optimize="${app.optimize}"
+                locale="${app.locale}"
+                configname="air">
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+            <source-path path-element="${path.src}"/>
+            <library-path dir="${FLEX_HOME}/frameworks/libs" includes="*.swc" append="true"/>
+            <library-path dir="${FLEX_HOME}/frameworks/libs/air" includes="*.swc" append="true"/>
+            <library-path dir="${FLEX_HOME}/frameworks/locale" includes="${app.locale}" append="true"/>
+        	<library-path dir="${basedir}/libs" includes="*.swc" append="true"/>
+        </mxmlc>
+    </target>
+	
+	<!-- *************************************************
+	AIR Certifation
+	************************************************* -->
+	<target name="certificate.check" depends="compile">
+		<available file="${KEYSTORE}" property="CERTIFICATE_FLAG"/>
+    </target>
+    
+    <target name="certificate" unless="CERTIFICATE_FLAG" depends="certificate.check">
+    	<mkdir dir="${path.key}" />
+        <java jar="${ADT}" fork="true"
+            failonerror="true">
+            <arg value="-certificate"/>
+            <arg value="-cn"/>
+            <arg value="${CERT_NAME}"/>
+            <arg value="-ou"/>
+            <arg value="${CERT_ORG_UNIT}"/>
+            <arg value="-o"/>
+            <arg value="${CERT_ORG_NAME}"/>
+            <arg value="-c"/>
+            <arg value="${CERT_COUNTRY}"/>
+            <arg value="${CERT_KEY_TYPE}"/>
+            <arg value="${KEYSTORE}"/>
+            <arg value="${CERT_PASSWORD}"/>
+        </java>
+    </target>
+	
+    <!-- *************************************************
+    AIR package building
+     ************************************************* -->
+    <target name="air" description="Create the AIR package" depends="certificate">
+    	<exec executable="${ADT_BAT}" failonerror="true">
+            <arg line="-package" />
+            <arg line="-tsa none" />
+        	<arg line="-storetype ${STORETYPE}" />
+        	<arg line="-keystore ${KEYSTORE}" />
+        	<arg line="-storepass ${CERT_PASSWORD}" />
+            <arg line="${path.deploy}/${app.name}.air" />
+            <arg line="${path.src}/${app.name}-app.xml" />
+            <arg line="-C ${path.deploy} ${app.name}.swf" />
+        </exec>
+    </target>
+    
+	<!-- *************************************************
+    Limpio los archivos temporales generados 
+     ************************************************* -->
+	<target name="clearTempFiles">
+		<delete file="${path.deploy}/${app.name}.swf" />
+		<delete file="${path.test.deploy}/${app.name}.swf" />
+		<delete file="${path.test.deploy}/flexUnitDescriptor.xml" />
+		<delete file="${path.test.deploy}/TestRunner.mxml" />
+		<delete file="${path.test.deploy}/TestRunner.swf" />
+	</target>
+	
+	<!-- *************************************************
+    Comprimo el deploy
+     ************************************************* -->
+	<target name="deployToZip">
+		<tstamp>
+		<format property="build.time" pattern="yyyyMMdd_HH_mm_ss" timezone="GMT-3"/>
+	</tstamp>
+		<zip destfile="${path.deploy}/${app.name}-${build.time}.zip"
+			update="true" basedir="${path.deploy}">
+		</zip>
+	</target>
+	
+	<!-- *************************************************
+    Genero la documentacion
+     ************************************************* -->
+	<target name="docGenerate">
+		<tstamp>
+			<format property="curretime" pattern="dd/MMM/yyyy HH:mm:ss" timezone="GMT-3" />
+		</tstamp>
+		<mkdir dir="${path.asdoc}" />
+		<asdoc output="${path.asdoc}" lenient="true" failonerror="true">
+			 <compiler.source-path path-element="${path.src}"/> 
+			 <doc-sources path-element="${path.src}/com"/> 
+			 <external-library-path dir="${FLEX_LIBS}" >
+		    	<include name="*.swc" />
+		    </external-library-path>
+			 <external-library-path dir="${FLEX_LIBS}/air" >
+		    	<include name="*.swc" />
+		    </external-library-path>
+			 <external-library-path dir="${FLEX_LIBS}/mx" >
+		    	<include name="*.swc" />
+		    </external-library-path>
+			 <external-library-path dir="${path.libs}" >
+		    	<include name="*.swc" />
+		    </external-library-path>
+		    
+		</asdoc>
+	</target>
+	
+	<!-- *************************************************
+    Genero Metricas con FlexPMD, FlexCPD y FlexMetrics
+     ************************************************* -->
+	<target name="metrics">
+		<mkdir dir="${path.metrics}" />
+		<antcall target="FlexPMD" />
+		<antcall target="FlexCPD" />
+		<antcall target="FlexMetrics" />
+	</target>
+	
+	<target name="FlexPMD">
+		<flexPmd sourceDirectory="${path.src}" outputDirectory="${path.metrics}"/>
+	</target>
+	
+	<target name="FlexCPD">
+		<flexCpd minimumTokenCount="25" outputFile="${path.metrics}\cpd.xml">
+            <fileset dir="${path.src}">
+                <include name="**/*.as" />
+                <include name="**/*.mxml" />
+            </fileset>
+	    </flexCpd>
+	</target>
+	
+	<target name="FlexMetrics">
+		<flexMetrics sourceDirectory="${path.src}" outputFile="${path.metrics}\javancss.xml"/>
+	</target>
+</project>

@@ -81,7 +81,8 @@ There are two examples buildAirCompleteDeploy.xml and buildFlexSimpleProject.xml
 4. Build ResourceBundles
 5. Build CSS
 6. Compile libraries (70% done)
-7. Up to SVN/GIT/CVS ([CD] (http://en.wikipedia.org/wiki/Continuous_delivery))
+7. Up to SVN/GIT/CVS 
+8. Up to FTP/File Server ([CD] (http://en.wikipedia.org/wiki/Continuous_delivery))
 
 
 ## Externals libraries

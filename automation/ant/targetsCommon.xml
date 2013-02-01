@@ -82,6 +82,14 @@
         </mxmlc>
     </target>
 
+    <target name="compileLibraries">
+		<!--
+		1. get workspace path
+		2. Standard library name <<*Library>> folder
+		3. For/while to genarate libraries
+		-->
+	</target>
+	
 	<!-- *************************************************
 	AIR Certifation
 	************************************************* -->
@@ -205,6 +213,7 @@
 	<!-- *************************************************
     Macros
      ************************************************* -->
+
     <macrodef name="buildLibrary">
     	<attribute name="libraryName" />
     	<attribute name="pathDeploy" />

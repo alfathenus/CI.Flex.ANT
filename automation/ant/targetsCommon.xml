@@ -267,4 +267,51 @@
 			<replace file="@{file.path}/@{fileName}-config.xml" token="@replace@" value="${@{destination}}" />
 		</sequential>
 	</macrodef>
+
+	<macrodef name="generate-class-list-from-path" description="">
+		<attribute name="path"/>
+		<attribute name="destination" />
+		<sequential>
+			<fileset id="sources" dir="@{path}" >
+				<include name="**/*.as"/>
+				<include name="**/*.mxml"/>
+			</fileset>
+			<pathconvert property="@{destination}" pathsep=" " refid="sources" >
+				<compositemapper >
+					<chainedmapper >
+						<globmapper from="@{path}\*" to="*"/>
+						<mapper type="package" from="*.as" to="*"/>
+					</chainedmapper>
+					<chainedmapper>
+						<globmapper from="@{path}\*" to="*"/>
+						<mapper type="package" from="*.mxml" to="*"/>
+					</chainedmapper>
+				</compositemapper>
+			</pathconvert>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="generate-modules-list-from-actionScriptProperties" description="">
+		<attribute name="path"/>
+		<attribute name="destination" />
+		<sequential>
+			<loadfile property="@{destination}" srcfile="@{path}\.actionScriptProperties">
+				<filterchain>
+					<linecontains>
+						<contains value='module application="'/>
+					</linecontains>
+					<tokenfilter>
+						<replaceregex pattern='&#60;module .+ sourcePath="' replace="" />
+						<replaceregex pattern='"/&#62;' replace="&#160;" />
+						<replaceregex pattern='src/' replace="" />
+						<replaceregex pattern='.*tests/.*' replace="" />
+					</tokenfilter>
+					<deletecharacters chars="\t\n\r "/>
+					<tokenfilter>
+						<replacestring from='&#160;' to=" " />
+					</tokenfilter>
+				</filterchain>
+			</loadfile>
+		</sequential>
+	</macrodef>
 </project>

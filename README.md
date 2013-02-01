@@ -89,3 +89,6 @@ There are two examples buildAirCompleteDeploy.xml and buildFlexSimpleProject.xml
 1. [FlexUnit] (http://www.flexunit.org/)
 2. [Flex PMD] (http://sourceforge.net/adobe/flexpmd/home/Home/)
 3. [Commons-lang] (http://commons.apache.org/lang/download_lang.cgi)
+
+## License
+[MIT License] (http://opensource.org/licenses/MIT)

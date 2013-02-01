@@ -69,7 +69,7 @@ When you use this ANT targets you should setup your Flex project whith this comm
 7. Zip generation
 
 ## Sonar integration
-You can found a sonar-project.properties ready to use whit [Sonar Project] (http://www.sonarsource.org/)
+You can found a sonar-project.properties ready to use for [Sonar Project] (http://www.sonarsource.org/)
 
 ## Examples
 There are two examples buildAirCompleteDeploy.xml and buildFlexSimpleProject.xml

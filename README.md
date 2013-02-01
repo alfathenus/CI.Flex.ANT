@@ -80,7 +80,8 @@ There are two examples buildAirCompleteDeploy.xml and buildFlexSimpleProject.xml
 3. Build modules in parellelal (whith multi core cpu)
 4. Build ResourceBundles
 5. Build CSS
-6. Compile libraries
+6. Compile libraries (70% done)
+7. Up to SVN/GIT/CVS ([CD] (http://en.wikipedia.org/wiki/Continuous_delivery))
 
 
 ## Externals libraries

@@ -81,7 +81,7 @@
         	<library-path dir="${basedir}/libs" includes="*.swc" append="true"/>
         </mxmlc>
     </target>
-	
+
 	<!-- *************************************************
 	AIR Certifation
 	************************************************* -->
@@ -125,7 +125,7 @@
     </target>
     
 	<!-- *************************************************
-    Limpio los archivos temporales generados 
+    Clear temp files
      ************************************************* -->
 	<target name="clearTempFiles">
 		<delete file="${path.deploy}/${app.name}.swf" />
@@ -136,7 +136,7 @@
 	</target>
 	
 	<!-- *************************************************
-    Comprimo el deploy
+    Build ZIP
      ************************************************* -->
 	<target name="deployToZip">
 		<tstamp>
@@ -148,7 +148,7 @@
 	</target>
 	
 	<!-- *************************************************
-    Genero la documentacion
+    Build documentation
      ************************************************* -->
 	<target name="docGenerate">
 		<tstamp>
@@ -175,7 +175,7 @@
 	</target>
 	
 	<!-- *************************************************
-    Genero Metricas con FlexPMD, FlexCPD y FlexMetrics
+    Build all metricas (FlexPMD, FlexCPD y FlexMetrics)
      ************************************************* -->
 	<target name="metrics">
 		<mkdir dir="${path.metrics}" />
@@ -200,4 +200,62 @@
 	<target name="FlexMetrics">
 		<flexMetrics sourceDirectory="${path.src}" outputFile="${path.metrics}\javancss.xml"/>
 	</target>
+
+
+	<!-- *************************************************
+    Macros
+     ************************************************* -->
+    <macrodef name="buildLibrary">
+    	<attribute name="libraryName" />
+    	<attribute name="pathDeploy" />
+    	<attribute name="pathLibs" />
+    	<attribute name="src" />
+
+    	<attribute name="swf.version" default="${project.swf.version}"/>
+    	<attribute name="incremental" default="${project.incremental}"/>
+    	<attribute name="compute.digest" default="${project.compute-digest}"/>
+    	<attribute name="debug" default="${project.debug}"/>
+    	<attribute name="optimize" default="${project.optimize}"/>
+
+    	<generate-class-list-from-flexProperties path=".\\" destination="temp.clases" fileName="@{libraryName}" file.path="@{pathDeploy}" />
+		<replace file="@{pathDeploy}/@{libraryName}-config.xml" token="@replacepathlibs@" value="@{pathLibs}" />
+		
+		<exec executable="${COMPC.EXE}" failonerror="true">
+			<arg line='-source-path+=""' />
+			<arg line='-sp+="@{src}"' />
+			<arg line='-output="@{pathDeploy}/@{libraryName}.swc"' />
+			<arg line='-load-config+=@{pathDeploy}/@{libraryName}-config.xml' />
+			<arg line='-target-player=11' />
+			<arg line='-swf-version=13' />
+			<arg line='-incremental=true' />
+			<arg line='-compute-digest=true' />
+			<arg line='-debug=false' />
+			<arg line='-optimize=true' />
+			<arg line='-link-report=${path.deploy}/@{libraryName}-report.xml' />
+		</exec>
+    </macrodef>
+
+	<macrodef name="generate-class-list-from-flexProperties" description="">
+		<attribute name="path" />
+		<attribute name="destination" />
+		<attribute name="file.path" />
+		<attribute name="fileName" />
+		
+		<sequential>
+			<loadfile property="@{destination}" srcfile="@{path}\.flexLibProperties">
+				<filterchain>
+					<linecontains>
+						<contains value='&#60;classEntry path="' />
+					</linecontains>
+					<tokenfilter>
+						<replacestring from='&#60;classEntry path="' to="&#60;class&#62;" />
+						<replacestring from='"/&#62;' to="&#60;/class&#62;" />
+					</tokenfilter>
+				</filterchain>
+			</loadfile>
+			
+			<copy file="${path.template}/template-config.xml" tofile="@{file.path}/@{fileName}-config.xml" overwrite="true" />
+			<replace file="@{file.path}/@{fileName}-config.xml" token="@replace@" value="${@{destination}}" />
+		</sequential>
+	</macrodef>
 </project>

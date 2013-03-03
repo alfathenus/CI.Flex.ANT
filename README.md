@@ -7,10 +7,10 @@ This is a group of ANT targets for continuous integration of Flex projects
 ## Standarization
 When you use this ANT targets you should setup your Flex project whith this common standard
 
-/Flex Project Folder
-    src/
-    test/
-    locales/
+Flex Project Folder
+---src/
+---test/
+---locales/
     automation/
     libs/
     build.xml

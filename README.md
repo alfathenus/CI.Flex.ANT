@@ -7,8 +7,7 @@ This is a group of ANT targets for continuous integration of Flex projects
 ## Standarization
 When you use this ANT targets you should setup your Flex project whith this common standard
 
-    <property file="${basedir}/automation/ant/conf/${user.name}.properties" />
-	<property file="${basedir}/automation/ant/conf/build.properties" />
+    Flex Project Folder
 
 ## Usage
 ### Basic configuration

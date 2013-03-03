@@ -7,21 +7,21 @@ This is a group of ANT targets for continuous integration of Flex projects
 ## Standarization
 When you use this ANT targets you should setup your Flex project whith this common standard
 
--Flex Project Folder
----- src/
----- test/
----- locales/
----- automation/
----- libs/
----- build.xml
----- etc....
+/Flex Project Folder
+    - src/
+    - test/
+    - locales/
+    - automation/
+    - libs/
+    - build.xml
+    - etc....
 
 ## Usage
 ### Basic configuration
     <property file="${basedir}/automation/ant/conf/${user.name}.properties" />
 	<property file="${basedir}/automation/ant/conf/build.properties" />
 
-    <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/> 
+    <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
 	<taskdef resource="flexUnitTasks.tasks">
 	   <classpath>
 	      <fileset dir="${path.ant.libs.flexunit}">
@@ -47,7 +47,7 @@ When you use this ANT targets you should setup your Flex project whith this comm
 		<ant antfile="${path.ant}/targetsCommon.xml" target="init" />
 		<ant antfile="${path.ant}/targetsCommon.xml" target="docGenerate" />
 	</target>
-	
+
 ### Testing
 	<target name="testing" >
 		<ant antfile="${path.ant}/targetsCommon.xml" target="init" />
@@ -81,7 +81,7 @@ There are two examples buildAirCompleteDeploy.xml and buildFlexSimpleProject.xml
 4. Build ResourceBundles
 5. Build CSS
 6. Compile libraries (70% done)
-7. Up to SVN/GIT/CVS 
+7. Up to SVN/GIT/CVS
 8. Up to FTP/File Server ([CD] (http://en.wikipedia.org/wiki/Continuous_delivery))
 
 

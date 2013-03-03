@@ -14,7 +14,7 @@ When you use this ANT targets you should setup your Flex project whith this comm
     automation/
     libs/
     build.xml
-    etc....
+    etc.... 
 
 ## Usage
 ### Basic configuration
